@@ -29,7 +29,7 @@
 | ID | 任务 | 交付物 | 验收标准 |
 |---|---|---|---|
 | W1-1 | 预约考试，确认改期规则 | `setup/exam-info.md` | 已约考，知道改期截止时间 |
-| W1-2 | kind 搭 1 控制面 + 2 工作节点集群，装 metrics-server、ingress-nginx | `setup/cluster.sh`、`setup/kind-config.yaml` | 脚本一键重建；3 个节点 Ready；`k top nodes` 有数据 |
+| W1-2 | sealos 搭 3 master + 3 node 集群，装 metrics-server、ingress-nginx、默认 StorageClass | `setup/install.sh` | 按脚本可重建；6 个节点 Ready；`k top nodes` 有数据 |
 | W1-3 | kubectl / vim 提速配置（alias、补全、`$do`） | `setup/bashrc-ckad`、`setup/vimrc` | 一行命令生成 Pod 模板 |
 | W1-4 | 重温架构：各组件职责，`kubectl apply` 的完整链路 | `w1-basics/notes.md`（含流程图） | 能口述 Pod 从提交到 Running 的过程 |
 | W1-5 | Pod、Namespace、Label/Selector、`k explain` 练习 | `w1-basics/*.yaml`（≥ 5 个） | 3 分钟内手写带 label、env、command、资源限制的 Pod |
@@ -40,7 +40,7 @@
 
 | ID | 任务 | 交付物 | 验收标准 |
 |---|---|---|---|
-| W2-1 | Dockerfile 构建镜像，导出并在 kind 中运行 | `w2-build/app/` | Pod 跑的是自己构建的镜像 |
+| W2-1 | Dockerfile 构建镜像，导出并导入节点 containerd 运行 | `w2-build/app/` | Pod 跑的是自己构建的镜像 |
 | W2-2 | 多容器 Pod：init container、sidecar、共享 emptyDir | `w2-build/multi-container.yaml` | sidecar 能读到主容器的日志 |
 | W2-3 | Job / CronJob | `w2-build/job.yaml`、`cronjob.yaml` | 能从 CronJob 手动触发 Job |
 | W2-4 | 存储：emptyDir、hostPath、PV/PVC/StorageClass | `w2-build/storage/` | Pod 重建后 PVC 数据还在 |
@@ -85,7 +85,7 @@
 |---|---|---|---|
 | W6-1 | Service 类型与 DNS | `w6-network/svc/` | 跨命名空间用 FQDN 访问成功 |
 | W6-2 | Ingress 按 host / path 路由 | `w6-network/ingress.yaml` | 不同 path 返回不同应用 |
-| W6-3 | NetworkPolicy（需先换 Calico） | `w6-network/netpol/` | curl 证明策略生效 |
+| W6-3 | NetworkPolicy（集群用 Cilium，已支持） | `w6-network/netpol/` | curl 证明策略生效 |
 | W6-4 | 模拟考 1（**12-12**），计时 2 小时 | `drills/killer-1.md` | 记录分数、耗时、错题 |
 | W6-5 | 模拟考 1 复盘（**12-13**） | `mistakes.md` | 所有题重做通过 |
 
