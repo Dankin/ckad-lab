@@ -9,7 +9,7 @@
 | 任务 | 要交的产出物 | 状态 |
 |---|---|---|
 | W1-1 预约考试 | 考试时间 | ✅ 12-19 13:00 |
-| W1-2 集群搭建 | 重装为 K8s v1.31.11 + Cilium v1.17.1 + Helm v3.19.2（阿里云 labring 镜像）；`setup/install.sh`（sealos 部署命令，密码不入库）；补齐 metrics-server、ingress-nginx、默认 StorageClass；`k top nodes` 有数据 | 🟡 三个组件已通过；版本不一致、install.sh 未提交 |
+| W1-2 集群搭建 | `setup/install.sh`；metrics-server、ingress-nginx、默认 StorageClass | ✅ 11-02（K8s v1.28.15，以后有空用 kubeasz 重装） |
 | W1-3 提速配置 | `setup/bashrc-ckad`、`setup/vimrc` | ⬜ |
 | W1-4 架构笔记 | `w1-basics/notes.md`（含流程图） | ⬜ |
 | W1-5 Pod 练习 | `w1-basics/` 下至少 5 个 YAML | ⬜ |
@@ -111,3 +111,14 @@
 > kubectl 变慢：已修复。本机 kubeconfig 的 server 是 `apiserver.cluster.local`。macOS 会把 `.local` 域名先交给 mDNS（Bonjour）解析，每次都要等约 5 秒超时，才回落到 /etc/hosts。已把 server 改成 `https://172.31.52.240:6443`，证书 SAN 里有这个 IP。改完后 `kubectl get nodes` 从 5.1 秒降到 0.08 秒。原文件备份在 `~/.kube/config.bak-20261102`。代价是 240 宕机时本机连不上，需要手动换成 241 或 242。
 >
 > 另外：本机 `/usr/local/bin/kubectl` 是 Docker Desktop 自带的 v1.36.1，PATH 里排在 Homebrew v1.36.4 后面，不影响使用。
+
+> **Kiro 复查（11-02 00:30）**：W1-2 ✅。按你的决定保持 v1.28.15，以 `setup/install.sh` 为准。日志里 W1-2 的命令（v1.31.11）没有实际执行过，以 install.sh 为准。
+>
+> install.sh 改了 3 处：
+> - 前三个镜像地址缺了 `/`（`docker.m.daocloud.iolabring`），已补上
+> - 密码不再写在脚本里，改成执行前先 `export SSH_PASSWORD=...`，没设置就直接报错退出
+> - 加了 `#!/usr/bin/env bash`
+>
+> 1.28 的影响：W2-2 的原生 sidecar（initContainers 里写 `restartPolicy: Always`）在 1.28 是 alpha，默认关闭，到时候改用普通的 sidecar 容器写法。
+>
+> 明天：W1-3 提速配置，交 `setup/bashrc-ckad` 和 `setup/vimrc`。

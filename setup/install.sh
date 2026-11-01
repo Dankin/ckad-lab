@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # https://sealos.run/docs/advanced/k8s/getting-started/install-cli
 
 # 获取版本列表，选择最新的非rc版本
@@ -10,11 +11,11 @@ export PROXY_PREFIX=https://ghfast.top
 # 下载二进制文件+自动安装
 curl -sfL ${PROXY_PREFIX}/https://raw.githubusercontent.com/labring/sealos/main/scripts/install.sh | PROXY_PREFIX=${PROXY_PREFIX} sh -s ${VERSION} labring/sealos
 
-SSH_PASSWORD="xxx"
+: "${SSH_PASSWORD:?先执行 export SSH_PASSWORD=节点密码}"
 # 集群初始化
-sealos run docker.m.daocloud.iolabring/kubernetes:v1.28.15 \
-  docker.m.daocloud.iolabring/helm:v3.9.4 \
-  docker.m.daocloud.iolabring/cilium:v1.13.4 \
+sealos run docker.m.daocloud.io/labring/kubernetes:v1.28.15 \
+  docker.m.daocloud.io/labring/helm:v3.9.4 \
+  docker.m.daocloud.io/labring/cilium:v1.13.4 \
   --masters 172.31.52.240,172.31.52.241,172.31.52.242 \
   --nodes 172.31.52.243,172.31.52.244,172.31.52.245 -p "$SSH_PASSWORD"
 
