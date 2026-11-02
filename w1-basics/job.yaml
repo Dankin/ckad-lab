@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hello
+spec:
+  template:
+    metadata: {}
+    spec:
+      containers:
+      - command:
+        - echo
+        - hello
+        image: busybox
+        name: hello
+        resources: {}
+      restartPolicy: Never
+status: {}

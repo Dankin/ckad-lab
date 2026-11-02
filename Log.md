@@ -10,9 +10,9 @@
 |---|---|---|
 | W1-1 预约考试 | 考试时间 | ✅ 12-19 13:00 |
 | W1-2 集群搭建 | `setup/install.sh`；metrics-server、ingress-nginx、默认 StorageClass | ✅ 11-02（K8s v1.28.15，以后有空用 kubeasz 重装） |
-| W1-3 提速配置 | `setup/bashrc-ckad`、`setup/vimrc` | ⬜ |
+| W1-3 提速配置 | `setup/quick_config.sh`；`w1-basics/` 5 个模板；Pod 改写并部署；常用操作练习 | ✅ 11-02 |
 | W1-4 架构笔记 | `w1-basics/notes.md`（含流程图） | ⬜ |
-| W1-5 Pod 练习 | `w1-basics/` 下至少 5 个 YAML | ⬜ |
+| W1-5 Pod 练习 | `w1-basics/` 下至少 5 个 YAML | ✅ 11-02（随 W1-3 一起验收） |
 | W1-6 周测 | 我出题，你在日志里写得分和用时 | ⬜ |
 | W1-7 系统检测 | 在日志写检测结果，以及 CKAD-CN 有没有 killer.sh | ⬜ |
 
@@ -32,6 +32,38 @@
 ## 日志
 
 新的一天加在最上面，格式随意，写清楚做了什么、产出物在哪、卡在哪就行。
+
+### 11-02
+
+- W1-3
+  - 别名和补全的配置写进 `setup/quick_config.sh`（bash 和 vim 合在一个文件里）；本机 zsh 也已配好
+  - 用 `--dry-run=client -o yaml` 在 `w1-basics/` 下生成 5 个模板：pod、deployment、svc、cm、job
+  - 改写 `pod.yaml`（labels、env、resources、command）并部署，Running
+  - 按检查意见改了 `cm.yaml`（重新生成，去掉导出时带出的元数据）和 `job.yaml`（补上 `-- echo hello`）
+  - 任务 3 已练：vim 粘贴和缩进、`--force --grace-period 0` 立即删除、建 `ckad` namespace 后切换再切回 default
+- 心得：YAML 不用硬背，先用命令生成骨架，字段用 `k explain` 查，大段配置从文档复制
+- 明天：W1-4 架构笔记
+
+> **Kiro 复查（11-02 21:20）**：W1-3 ✅，W1-5 ✅。
+>
+> - `cm.yaml` 重新生成后已干净，`job.yaml` 有了 `command: [echo, hello]`，5 个 YAML 都通过了 `--dry-run=server`
+> - `ckad` namespace 已建好，当前 context 已切回 `default`；`nginx` Pod 已删除（删除练习）
+> - 环境变量的值保留 `env`，不影响验收
+> - 还没提交：`setup/1` 在暂存区里，提交前先执行 `git rm --cached setup/1 && rm setup/1`
+
+> **Kiro 检查（11-02 20:50）**：W1-3 🟡。
+>
+> 已通过：
+> - `pod.yaml`：Pod `nginx` 在 it-k8s-test04 上 Running，0 次重启；labels `app=web,tier=frontend` 正确；requests 100m/64Mi、limits 200m/128Mi 正确，QoS 是 Burstable；command 生效，日志第一行是 `start`
+> - 5 个 YAML 都通过了 `--dry-run=server`
+>
+> 要改：
+> 1. **`cm.yaml` 里有 `creationTimestamp`、`resourceVersion`、`uid`**，说明它是从集群里已有的对象导出的，不是用 `--dry-run=client` 生成的。带着 `resourceVersion` 去 apply，对象被改过之后会报冲突。用 `k create cm app-config --from-literal=ENV=dev --dry-run=client -o yaml > cm.yaml` 重新生成
+> 2. **`job.yaml` 缺了 `command`**：生成命令最后的 `-- echo hello` 没带上。busybox 没有命令会直接退出，Job 也能显示 Complete，但什么都没做
+> 3. 环境变量的值写的是 `env`，任务要求是 `dev`（cm 和 pod 两处）
+> 4. 考试里镜像直接写 `nginx`、`busybox`，不要带 `docker.m.daocloud.io/` 前缀。只有练习时才需要这个前缀
+>
+> 还差：任务 3（删除 / 切 namespace / explain / vim）的反馈；本条日志里你自己的进度记录；提交。提交前先 `git rm --cached setup/1 && rm setup/1`。
 
 ### 11-01
 
